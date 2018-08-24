@@ -15,6 +15,9 @@
 package org.wii.agency;
 
 import io.grpc.stub.StreamObserver;
+import org.wii.agency.helloworld.GreeterGrpc;
+import org.wii.agency.helloworld.HelloReply;
+import org.wii.agency.helloworld.HelloRequest;
 
 class GreeterService extends GreeterGrpc.GreeterImplBase {
 

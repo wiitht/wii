@@ -14,6 +14,8 @@
 
 package org.wii.agency;
 
+import org.wii.agency.helloworld.GreeterGrpc;
+import org.wii.agency.helloworld.HelloRequest;
 import org.wii.agency.stats.Recorder;
 import org.wii.agency.stats.Snapshot;
 import org.wii.agency.util.Netty;

@@ -26,6 +26,8 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wii.agency.helloworld.HelloReply;
+import org.wii.agency.helloworld.HelloRequest;
 
 /**
  * An HTTP/1.1 server which parses protobuf messages in request bodies and emits protobuf messages
