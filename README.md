@@ -7,8 +7,8 @@ wii-agency组件是一个类似sidecar的中间件，RPC协议上打算支持GRP
 ### wii-gateway：
 Kong在服务前端做一级网关是比较理想的选择，其内部也是基于openrestry实现并且提供了非常丰富的治理功能；wii-gateway主要是基于zuul2实现作为应用的二级网关使用；
 
-### wii-pilot: 
-wii-pilot用于服务治理控制的组件，后续希望提供一个统一的平台集中的对pilot、agency下发治理命令；达到按照需求对服务进行降级，限流，扩容等等；
+### wii-control: 
+wii-control用于服务治理控制的组件，后续希望提供一个统一的平台集中的对pilot、agency下发治理命令；达到按照需求对服务进行降级，限流，扩容等等；
 
 ### wii-access:
 wii-access是一个对认证，权限，安全等等进行封装的组件；
