@@ -70,9 +70,16 @@ public class GrpcProxyClientHandler extends Http2ConnectionHandler {
             sendHeaderFrame(ctx, (SendHeaderCommand) msg, promise);
         } else if (msg instanceof SendFrameCommand) {
             sendGrpcFrame(ctx, (SendFrameCommand) msg, promise);
-        } else {
+        } else if (msg instanceof SendDataCommand){
+            sendDataFrame(ctx, (SendDataCommand)msg, promise);
+        }
+        else {
             throw new AssertionError("Write called for unexpected type: " + msg.getClass().getName());
         }
+    }
+
+    private void sendDataFrame(ChannelHandlerContext ctx, SendDataCommand cmd, ChannelPromise promise){
+        ctx.write(cmd.content(), promise);
     }
 
     private void sendHeaderFrame(ChannelHandlerContext ctx, SendHeaderCommand cmd,
