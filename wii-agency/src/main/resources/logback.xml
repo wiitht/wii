@@ -14,11 +14,11 @@
   -->
 
 <configuration>
-  <appender class="ch.qos.logback.core.ConsoleAppender" name="console">
+  <!--<appender class="ch.qos.logback.core.ConsoleAppender" name="console">
     <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-      <jsonGeneratorDecorator class="org.wii.agency.util.PrettyPrintingDecorator"/>
+      <jsonGeneratorDecorator class="org.wii.dexil.PrettyPrintingDecorator"/>
     </encoder>
-  </appender>
+  </appender>-->
   <appender class="ch.qos.logback.classic.AsyncAppender" name="console-async">
     <appender-ref ref="console"/>
   </appender>

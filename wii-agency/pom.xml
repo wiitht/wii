@@ -227,7 +227,7 @@
           <transformers>
             <transformer
               implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-              <mainClass>org.wii.agency.Runner</mainClass>
+              <mainClass>org.wii.dex.Runner</mainClass>
             </transformer>
           </transformers>
         </configuration>
