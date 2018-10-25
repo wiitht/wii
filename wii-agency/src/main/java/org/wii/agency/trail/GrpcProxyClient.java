@@ -54,5 +54,9 @@ public class GrpcProxyClient {
     public static void sendFrame(SendFrameCommand command){
         queue.enqueue(command, true);
     }
+    
+      public static void sendData(SendDataCommand command){
+        queue.enqueue(command, true);
+    }
 
 }
