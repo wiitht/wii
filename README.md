@@ -1,14 +1,14 @@
 # wii:
 Wii是为微服务提供基础设施组件的一套体系；目的是希望能够为微服务治理带来一些更加适合我们使用的方案。
 ## 基础组件：
-### wii-agency: 
+### wii-dex: 
 wii-agency组件是一个类似sidecar的中间件，RPC协议上打算支持GRPC，Hessian，Thrift并提供客户端和服务端调用模块；Http协议的支持上考虑对springcloud fegin进行封装简化其使用并且让其友好的支持其他服务注册(如consul,zookeeper)；代理服务上支持基于不同协议，服务注册发现的负载均衡实现(底层基于Ribbon实现)，并且提供代理配置和服务注册的配置；同时希望提供容错(hystrix)处理，链路追踪(zipkin)，流量监控，健康检查等等机制；并且考虑兼容istio；在应用上支持组件独立启动或者内嵌于某个项目中以端口形式启动；
 
 ### wii-gateway：
 Kong在服务前端做一级网关是比较理想的选择，其内部也是基于openrestry实现并且提供了非常丰富的治理功能；wii-gateway主要是基于zuul2实现作为应用的二级网关使用；
 
 ### wii-control: 
-wii-control用于服务治理控制的组件，后续希望提供一个统一的平台集中的对pilot、agency下发治理命令；达到按照需求对服务进行降级，限流，扩容等等；
+wii-control用于服务治理控制的组件，后续希望提供一个统一的平台集中的对pilot、dex下发治理命令；达到按照需求对服务进行降级，限流，扩容等等；
 
 ### wii-access:
 wii-access是一个对认证，权限，安全等等进行封装的组件；
