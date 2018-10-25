@@ -30,11 +30,14 @@
     <slf4j.version>1.7.25</slf4j.version>
     <netty.version>4.1.16.Final</netty.version>
     <jackson.version>2.9.3</jackson.version>
-    <armeria.version>0.73.0</armeria.version>
   </properties>
 
   <dependencies>
-
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>3.0.2</version>
+    </dependency>
     <dependency>
       <groupId>com.google.auto.value</groupId>
       <artifactId>auto-value</artifactId>
@@ -79,14 +82,24 @@
     </dependency>
 
     <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>4.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>3.5.1</version>
+    </dependency>
+    <dependency>
       <groupId>com.linecorp.armeria</groupId>
       <artifactId>armeria</artifactId>
-      <version>${armeria.version}</version>
+      <version>0.73.0</version>
     </dependency>
     <dependency>
       <groupId>com.linecorp.armeria</groupId>
       <artifactId>armeria-grpc</artifactId>
-      <version>${armeria.version}</version>
+      <version>0.73.0</version>
     </dependency>
 
   </dependencies>
