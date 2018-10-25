@@ -9,8 +9,5 @@
         <module name="wii-agency" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="wii-agency" target="8" />
-    </bytecodeTargetLevel>
   </component>
 </project>

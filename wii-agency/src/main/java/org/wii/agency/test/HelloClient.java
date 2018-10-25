@@ -1,5 +1,6 @@
 package org.wii.agency.test;
 
+import com.linecorp.armeria.client.ClientBuilder;
 import org.wii.agency.helloworld.GreeterGrpc;
 import org.wii.agency.helloworld.HelloReply;
 import org.wii.agency.helloworld.HelloRequest;
@@ -70,7 +71,8 @@ public class HelloClient {
             client.shutdown();
         }*/
 
-        GreeterGrpc.GreeterBlockingStub blockingStub = new ClientFactoryBuilder().build().newClient("gproto+http://127.0.0.1:8083/", GreeterGrpc.GreeterBlockingStub.class);
+        GreeterGrpc.GreeterBlockingStub blockingStub = new ClientBuilder("gproto+http://127.0.0.1:8083/")
+        .build(GreeterGrpc.GreeterBlockingStub.class);
         HelloRequest request = HelloRequest.newBuilder().setName("111111").build();
         HelloReply reply = blockingStub.sayHello(request);
         System.out.println(reply.getMessage());

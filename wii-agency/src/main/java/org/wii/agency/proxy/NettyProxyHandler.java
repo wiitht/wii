@@ -14,7 +14,6 @@ import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.http2.*;
 import io.netty.handler.logging.LogLevel;
 import io.netty.util.AsciiString;
-import okhttp3.*;
 import org.wii.agency.trail.GrpcProxyClient;
 import org.wii.agency.trail.SendFrameCommand;
 import org.wii.agency.trail.SendHeaderCommand;
