@@ -64,11 +64,6 @@
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
-      <artifactId>netty-tcnative</artifactId>
-      <classifier>${os.detected.classifier}</classifier>
-    </dependency>
-    <dependency>
-      <groupId>io.netty</groupId>
       <artifactId>netty-transport-native-epoll</artifactId>
       <!-- native-epoll is only available for linux-x86_64 -->
       <classifier>linux-x86_64</classifier>
