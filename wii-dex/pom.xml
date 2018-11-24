@@ -19,7 +19,7 @@
   <modelVersion>4.0.0</modelVersion>
 
  <parent>
-   <groupId>org.wiitht.wii</groupId>
+   <groupId>org.wiitht</groupId>
    <artifactId>wii</artifactId>
    <version>0.1.0-SNAPSHOT</version>
    <relativePath>../pom.xml</relativePath>

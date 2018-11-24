@@ -63,17 +63,17 @@ public class HelloClient {
      * greeting.
      */
     public static void main(String[] args) throws Exception {
-        /*HelloClient client = new HelloClient("localhost", 8083);
+        HelloClient client = new HelloClient("localhost", 50051);
         try {
             client.greet("1111");
         } finally {
             client.shutdown();
-        }*/
+        }
 
-        GreeterGrpc.GreeterBlockingStub blockingStub = new ClientFactoryBuilder().build().newClient("gproto+http://127.0.0.1:8083/",GreeterGrpc.GreeterBlockingStub.class);
+       /* GreeterGrpc.GreeterBlockingStub blockingStub = new ClientFactoryBuilder().build().newClient("gproto+http://127.0.0.1:8083/",GreeterGrpc.GreeterBlockingStub.class);
         HelloRequest request = HelloRequest.newBuilder().setName("111111").build();
         HelloReply reply = blockingStub.sayHello(request);
-        System.out.println(reply.getMessage());
+        System.out.println(reply.getMessage());*/
 
 
     }
