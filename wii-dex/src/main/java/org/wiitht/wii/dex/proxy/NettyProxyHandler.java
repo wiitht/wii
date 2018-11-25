@@ -347,7 +347,7 @@ public class NettyProxyHandler extends AbstractNettyProxyHandler {
             NettyProxyServerStream.TransportState stream = serverStream(requireHttp2Stream(streamId));
             stream.inboundDataReceived(data, endOfStream);
         } catch (Throwable e) {
-            logger.log(Level.WARNING, "Exception in onDataRead()", e);
+            logger.logging(Level.WARNING, "Exception in onDataRead()", e);
             // Throw an exception that will get handled by onStreamError.
             throw newStreamException(streamId, e);
         }*/
@@ -720,8 +720,8 @@ public class NettyProxyHandler extends AbstractNettyProxyHandler {
                 try {
                     exceptionCaught(ctx, ex);
                 } catch (Exception ex2) {
-                    logger.log(Level.WARNING, "Exception while propagating exception", ex2);
-                    logger.log(Level.WARNING, "Original failure", ex);
+                    logger.logging(Level.WARNING, "Exception while propagating exception", ex2);
+                    logger.logging(Level.WARNING, "Original failure", ex);
                 }
             }*/
         }

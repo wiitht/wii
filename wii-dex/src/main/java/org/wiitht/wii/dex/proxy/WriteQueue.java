@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class WriteQueue {
 
-    // Dequeue in chunks, so we don't have to acquire the queue's log too often.
+    // Dequeue in chunks, so we don't have to acquire the queue's logging too often.
     @VisibleForTesting
     static final int DEQUE_CHUNK_SIZE = 128;
 
