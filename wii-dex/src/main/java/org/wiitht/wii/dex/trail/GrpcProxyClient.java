@@ -20,29 +20,29 @@ public class GrpcProxyClient {
     private static ProxyWriteQueue queue;
 
     public static void start(WriteQueue writeQueue){
-        if (Objects.isNull(queue)){
-            EventLoopGroup group = new NioEventLoopGroup();
-            try {
-                Bootstrap bootstrap = new Bootstrap();
-                bootstrap.group(group).channel(NioSocketChannel.class)
-                .option(ChannelOption.SO_KEEPALIVE, true)
-                .handler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel ch) throws Exception {
-                        ChannelPipeline pipeline = ch.pipeline();
-                        GrpcProxyClientHandler handler = GrpcProxyClientHandler.createHandler(writeQueue);
-                        pipeline.addLast("handler", handler);
-                    }
-                });
-                bootstrap.register();
-                ChannelFuture future = bootstrap.connect(new InetSocketAddress("localhost", 50051)).sync();
-                Channel channel = future.channel();
-                queue = new ProxyWriteQueue(channel);
-                //bootstrap.connect(new InetSocketAddress("localhost", 50051)).sync();
-            } catch (Exception e){
-                e.printStackTrace();
-            }
+        EventLoopGroup group = new NioEventLoopGroup();
+        try {
+            Bootstrap bootstrap = new Bootstrap();
+            bootstrap.group(group).channel(NioSocketChannel.class)
+                    .option(ChannelOption.SO_KEEPALIVE, true)
+                    .handler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel ch) throws Exception {
+                            ChannelPipeline pipeline = ch.pipeline();
+                            GrpcProxyClientHandler handler = GrpcProxyClientHandler.createHandler(writeQueue);
+                            pipeline.addLast("handler", handler);
+                        }
+                    });
+            bootstrap.register();
+            ChannelFuture future = bootstrap.connect(new InetSocketAddress("localhost", 50051)).sync();
+            Channel channel = future.channel();
+            queue = new ProxyWriteQueue(channel);
+            //bootstrap.connect(new InetSocketAddress("localhost", 50051)).sync();
+        } catch (Exception e){
+            e.printStackTrace();
         }
+       /* if (Objects.isNull(queue)){
+        }*/
     }
 
     public static void sendHeader(SendHeaderCommand command){

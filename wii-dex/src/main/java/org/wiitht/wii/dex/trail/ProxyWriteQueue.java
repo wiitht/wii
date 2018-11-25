@@ -47,7 +47,7 @@ public class ProxyWriteQueue {
             // Add the queue to the tail of the event loop so writes will be executed immediately
             // inside the event loop. Note DO NOT do channel.write outside the event loop as
             // it will not wake up immediately without a flush.
-            channel.eventLoop().execute(later);
+            flush();
         }
     }
 
@@ -77,7 +77,8 @@ public class ProxyWriteQueue {
         Preconditions.checkArgument(command.promise() == null, "promise must not be set on command");
 
         command.promise(promise);
-        queue.add(command);
+
+       queue.add(command);
         if (flush) {
             scheduleFlush();
         }

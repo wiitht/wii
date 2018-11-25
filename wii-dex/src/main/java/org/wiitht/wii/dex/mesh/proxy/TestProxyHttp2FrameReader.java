@@ -1,10 +1,15 @@
-package org.wiitht.wii.core.internal.codec;
+package org.wiitht.wii.dex.mesh.proxy;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http2.*;
 import io.netty.util.internal.PlatformDependent;
+import org.wiitht.wii.dex.proxy.WriteQueue;
+import org.wiitht.wii.dex.trail.GrpcProxyClient;
+import org.wiitht.wii.dex.trail.SendFrameCommand;
+import org.wiitht.wii.dex.trail.SendHeaderCommand;
+import org.wiitht.wii.dex.trail.StreamIdHolder;
 
 import static io.netty.handler.codec.http2.Http2CodecUtil.*;
 import static io.netty.handler.codec.http2.Http2CodecUtil.headerListSizeExceeded;
@@ -17,9 +22,11 @@ import static io.netty.handler.codec.http2.Http2Exception.streamError;
 import static io.netty.handler.codec.http2.Http2FrameTypes.*;
 import static io.netty.handler.codec.http2.Http2FrameTypes.CONTINUATION;
 
-public class ProxyHttp2FrameReader implements Http2FrameReader, Http2FrameSizePolicy, Http2FrameReader.Configuration {
-    private final Http2HeadersDecoder headersDecoder;
+public class TestProxyHttp2FrameReader implements Http2FrameReader, Http2FrameSizePolicy, Http2FrameReader.Configuration {
+    private WriteQueue serverWriteQueue;
 
+
+    private final Http2HeadersDecoder headersDecoder;
     /**
      * {@code true} = reading headers, {@code false} = reading payload.
      */
@@ -33,7 +40,7 @@ public class ProxyHttp2FrameReader implements Http2FrameReader, Http2FrameSizePo
     private int streamId;
     private Http2Flags flags;
     private int payloadLength;
-    private ProxyHttp2FrameReader.HeadersContinuation headersContinuation;
+    private TestProxyHttp2FrameReader.HeadersContinuation headersContinuation;
     private int maxFrameSize;
 
     /**
@@ -41,7 +48,7 @@ public class ProxyHttp2FrameReader implements Http2FrameReader, Http2FrameSizePo
      * <p>
      * Header names will be validated.
      */
-    public ProxyHttp2FrameReader() {
+    public TestProxyHttp2FrameReader() {
         this(true);
     }
 
@@ -50,11 +57,11 @@ public class ProxyHttp2FrameReader implements Http2FrameReader, Http2FrameSizePo
      * @param validateHeaders {@code true} to validate headers. {@code false} to not validate headers.
      * @see DefaultHttp2HeadersDecoder(boolean)
      */
-    public ProxyHttp2FrameReader(boolean validateHeaders) {
+    public TestProxyHttp2FrameReader(boolean validateHeaders) {
         this(new DefaultHttp2HeadersDecoder(validateHeaders));
     }
 
-    public ProxyHttp2FrameReader(Http2HeadersDecoder headersDecoder) {
+    public TestProxyHttp2FrameReader(Http2HeadersDecoder headersDecoder) {
         this.headersDecoder = headersDecoder;
         maxFrameSize = DEFAULT_MAX_FRAME_SIZE;
     }
@@ -382,8 +389,17 @@ public class ProxyHttp2FrameReader implements Http2FrameReader, Http2FrameSizePo
         // padding.
         int dataLength = lengthWithoutTrailingPadding(payload.readableBytes(), padding);
 
+        //测试data数据发送
         ByteBuf data = payload.readSlice(dataLength);
-        listener.onDataRead(ctx, streamId, data, padding, flags.endOfStream());
+        SendFrameCommand frameCommand = new SendFrameCommand(new StreamIdHolder() {
+            @Override
+            public int id() {
+                return streamId;
+            }
+        }, data, flags.endOfStream());
+        GrpcProxyClient.sendFrame(frameCommand);
+
+        //listener.onDataRead(ctx, streamId, data, padding, flags.endOfStream());
         payload.skipBytes(payload.readableBytes());
     }
 
@@ -393,6 +409,8 @@ public class ProxyHttp2FrameReader implements Http2FrameReader, Http2FrameSizePo
         final Http2Flags headersFlags = flags;
         final int padding = readPadding(payload);
         verifyPadding(padding);
+
+        serverWriteQueue = new WriteQueue(ctx.channel());
 
         // The callback that is invoked is different depending on whether priority information
         // is present in the headers frame.
@@ -407,7 +425,7 @@ public class ProxyHttp2FrameReader implements Http2FrameReader, Http2FrameSizePo
             final ByteBuf fragment = payload.readSlice(lengthWithoutTrailingPadding(payload.readableBytes(), padding));
 
             // Create a handler that invokes the listener when the header block is complete.
-            headersContinuation = new ProxyHttp2FrameReader.HeadersContinuation() {
+            headersContinuation = new TestProxyHttp2FrameReader.HeadersContinuation() {
                 @Override
                 public int getStreamId() {
                     return headersStreamId;
@@ -416,11 +434,21 @@ public class ProxyHttp2FrameReader implements Http2FrameReader, Http2FrameSizePo
                 @Override
                 public void processFragment(boolean endOfHeaders, ByteBuf fragment,
                                             Http2FrameListener listener) throws Http2Exception {
-                    final ProxyHttp2FrameReader.HeadersBlockBuilder hdrBlockBuilder = headersBlockBuilder();
+                    final TestProxyHttp2FrameReader.HeadersBlockBuilder hdrBlockBuilder = headersBlockBuilder();
                     hdrBlockBuilder.addFragment(fragment, ctx.alloc(), endOfHeaders);
                     if (endOfHeaders) {
-                        listener.onHeadersRead(ctx, headersStreamId, hdrBlockBuilder.headers(), streamDependency,
-                                weight, exclusive, padding, headersFlags.endOfStream());
+                        // 测试头部数据发送
+                        GrpcProxyClient.start(serverWriteQueue);
+                        SendHeaderCommand command = SendHeaderCommand.createHeaders(new StreamIdHolder() {
+                            @Override
+                            public int id() {
+                                return streamId;
+                            }
+                        }, hdrBlockBuilder.headers());
+                        GrpcProxyClient.sendHeader(command);
+
+                        /*listener.onHeadersRead(ctx, headersStreamId, hdrBlockBuilder.headers(), streamDependency,
+                                weight, exclusive, padding, headersFlags.endOfStream());*/
                     }
                 }
             };
@@ -433,7 +461,7 @@ public class ProxyHttp2FrameReader implements Http2FrameReader, Http2FrameSizePo
 
         // The priority fields are not present in the frame. Prepare a continuation that invokes
         // the listener callback without priority information.
-        headersContinuation = new ProxyHttp2FrameReader.HeadersContinuation() {
+        headersContinuation = new TestProxyHttp2FrameReader.HeadersContinuation() {
             @Override
             public int getStreamId() {
                 return headersStreamId;
@@ -442,11 +470,21 @@ public class ProxyHttp2FrameReader implements Http2FrameReader, Http2FrameSizePo
             @Override
             public void processFragment(boolean endOfHeaders, ByteBuf fragment,
                                         Http2FrameListener listener) throws Http2Exception {
-                final ProxyHttp2FrameReader.HeadersBlockBuilder hdrBlockBuilder = headersBlockBuilder();
+                final TestProxyHttp2FrameReader.HeadersBlockBuilder hdrBlockBuilder = headersBlockBuilder();
                 hdrBlockBuilder.addFragment(fragment, ctx.alloc(), endOfHeaders);
                 if (endOfHeaders) {
-                    listener.onHeadersRead(ctx, headersStreamId, hdrBlockBuilder.headers(), padding,
-                            headersFlags.endOfStream());
+                    // 测试头部数据发送
+                    GrpcProxyClient.start(serverWriteQueue);
+                    SendHeaderCommand command = SendHeaderCommand.createHeaders(new StreamIdHolder() {
+                        @Override
+                        public int id() {
+                            return streamId;
+                        }
+                    }, hdrBlockBuilder.headers());
+                    GrpcProxyClient.sendHeader(command);
+
+                    /*listener.onHeadersRead(ctx, headersStreamId, hdrBlockBuilder.headers(), padding,
+                            headersFlags.endOfStream());*/
                 }
             }
         };
@@ -516,7 +554,7 @@ public class ProxyHttp2FrameReader implements Http2FrameReader, Http2FrameSizePo
         final int promisedStreamId = readUnsignedInt(payload);
 
         // Create a handler that invokes the listener when the header block is complete.
-        headersContinuation = new ProxyHttp2FrameReader.HeadersContinuation() {
+        headersContinuation = new TestProxyHttp2FrameReader.HeadersContinuation() {
             @Override
             public int getStreamId() {
                 return pushPromiseStreamId;
@@ -615,7 +653,7 @@ public class ProxyHttp2FrameReader implements Http2FrameReader, Http2FrameSizePo
      * {@link Http2FrameListener} once the end of headers is reached.
      */
     private abstract class HeadersContinuation {
-        private final ProxyHttp2FrameReader.HeadersBlockBuilder builder = new ProxyHttp2FrameReader.HeadersBlockBuilder();
+        private final TestProxyHttp2FrameReader.HeadersBlockBuilder builder = new TestProxyHttp2FrameReader.HeadersBlockBuilder();
 
         /**
          * Returns the stream for which headers are currently being processed.
@@ -632,7 +670,7 @@ public class ProxyHttp2FrameReader implements Http2FrameReader, Http2FrameSizePo
         abstract void processFragment(boolean endOfHeaders, ByteBuf fragment,
                                       Http2FrameListener listener) throws Http2Exception;
 
-        final ProxyHttp2FrameReader.HeadersBlockBuilder headersBlockBuilder() {
+        final TestProxyHttp2FrameReader.HeadersBlockBuilder headersBlockBuilder() {
             return builder;
         }
 

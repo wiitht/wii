@@ -19,14 +19,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.wiitht</groupId>
+        <groupId>org.wiitht.wii</groupId>
         <artifactId>wii</artifactId>
         <version>0.1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>wii-core</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
 
     <dependencies>
         <dependency>

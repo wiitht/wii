@@ -8,6 +8,8 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.wiitht.wii.dex.mesh.proxy.ProxyConnectionHandler;
+import org.wiitht.wii.dex.mesh.proxy.TestHandlerFactory;
+
 /**
  * @Author tanghong
  * @Date 18-10-23-下午6:29
@@ -24,7 +26,7 @@ public class MeshServer {
                     .childHandler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
-                            ch.pipeline().addLast("handler", new ProxyConnectionHandler());
+                            ch.pipeline().addLast("handler", TestHandlerFactory.createHandler());
                         }
                     });
 
