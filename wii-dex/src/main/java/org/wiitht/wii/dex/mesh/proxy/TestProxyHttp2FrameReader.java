@@ -23,8 +23,6 @@ import static io.netty.handler.codec.http2.Http2FrameTypes.*;
 import static io.netty.handler.codec.http2.Http2FrameTypes.CONTINUATION;
 
 public class TestProxyHttp2FrameReader implements Http2FrameReader, Http2FrameSizePolicy, Http2FrameReader.Configuration {
-    private WriteQueue serverWriteQueue;
-
 
     private final Http2HeadersDecoder headersDecoder;
     /**
@@ -391,15 +389,7 @@ public class TestProxyHttp2FrameReader implements Http2FrameReader, Http2FrameSi
 
         //测试data数据发送
         ByteBuf data = payload.readSlice(dataLength);
-        SendFrameCommand frameCommand = new SendFrameCommand(new StreamIdHolder() {
-            @Override
-            public int id() {
-                return streamId;
-            }
-        }, data, flags.endOfStream());
-        GrpcProxyClient.sendFrame(frameCommand);
-
-        //listener.onDataRead(ctx, streamId, data, padding, flags.endOfStream());
+        listener.onDataRead(ctx, streamId, data, padding, flags.endOfStream());
         payload.skipBytes(payload.readableBytes());
     }
 
@@ -409,8 +399,6 @@ public class TestProxyHttp2FrameReader implements Http2FrameReader, Http2FrameSi
         final Http2Flags headersFlags = flags;
         final int padding = readPadding(payload);
         verifyPadding(padding);
-
-        serverWriteQueue = new WriteQueue(ctx.channel());
 
         // The callback that is invoked is different depending on whether priority information
         // is present in the headers frame.
@@ -438,17 +426,9 @@ public class TestProxyHttp2FrameReader implements Http2FrameReader, Http2FrameSi
                     hdrBlockBuilder.addFragment(fragment, ctx.alloc(), endOfHeaders);
                     if (endOfHeaders) {
                         // 测试头部数据发送
-                        GrpcProxyClient.start(serverWriteQueue);
-                        SendHeaderCommand command = SendHeaderCommand.createHeaders(new StreamIdHolder() {
-                            @Override
-                            public int id() {
-                                return streamId;
-                            }
-                        }, hdrBlockBuilder.headers());
-                        GrpcProxyClient.sendHeader(command);
-
-                        /*listener.onHeadersRead(ctx, headersStreamId, hdrBlockBuilder.headers(), streamDependency,
-                                weight, exclusive, padding, headersFlags.endOfStream());*/
+                        Http2Headers headers = hdrBlockBuilder.headers();
+                        listener.onHeadersRead(ctx, headersStreamId, headers, streamDependency,
+                                weight, exclusive, padding, headersFlags.endOfStream());
                     }
                 }
             };
@@ -474,17 +454,9 @@ public class TestProxyHttp2FrameReader implements Http2FrameReader, Http2FrameSi
                 hdrBlockBuilder.addFragment(fragment, ctx.alloc(), endOfHeaders);
                 if (endOfHeaders) {
                     // 测试头部数据发送
-                    GrpcProxyClient.start(serverWriteQueue);
-                    SendHeaderCommand command = SendHeaderCommand.createHeaders(new StreamIdHolder() {
-                        @Override
-                        public int id() {
-                            return streamId;
-                        }
-                    }, hdrBlockBuilder.headers());
-                    GrpcProxyClient.sendHeader(command);
-
-                    /*listener.onHeadersRead(ctx, headersStreamId, hdrBlockBuilder.headers(), padding,
-                            headersFlags.endOfStream());*/
+                    Http2Headers headers = hdrBlockBuilder.headers();
+                    listener.onHeadersRead(ctx, headersStreamId, headers, padding,
+                            headersFlags.endOfStream());
                 }
             }
         };

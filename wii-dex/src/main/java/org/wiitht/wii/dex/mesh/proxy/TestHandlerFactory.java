@@ -11,6 +11,12 @@ import io.netty.handler.codec.http2.*;
 import io.netty.handler.logging.LogLevel;
 import io.netty.util.AsciiString;
 import io.netty.util.internal.PlatformDependent;
+import org.wiitht.wii.dex.proxy.WriteQueue;
+import org.wiitht.wii.dex.trail.GrpcProxyClient;
+import org.wiitht.wii.dex.trail.SendFrameCommand;
+import org.wiitht.wii.dex.trail.SendHeaderCommand;
+import org.wiitht.wii.dex.trail.StreamIdHolder;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -121,6 +127,7 @@ public class TestHandlerFactory {
 
     public static class FrameListener extends Http2FrameAdapter {
         private boolean firstSettings = true;
+        private WriteQueue serverWriteQueue;
 
         @Override
         public void onSettingsRead(ChannelHandlerContext ctx, Http2Settings settings) {
@@ -135,6 +142,14 @@ public class TestHandlerFactory {
         @Override
         public int onDataRead(ChannelHandlerContext ctx, int streamId, ByteBuf data, int padding,
                               boolean endOfStream) throws Http2Exception {
+
+            SendFrameCommand frameCommand = new SendFrameCommand(new StreamIdHolder() {
+                @Override
+                public int id() {
+                    return streamId;
+                }
+            }, data, endOfStream);
+            GrpcProxyClient.sendFrame(frameCommand);
             /*if (keepAliveManager != null) {
                 keepAliveManager.onDataReceived();
             }*/
@@ -151,6 +166,16 @@ public class TestHandlerFactory {
                                   boolean exclusive,
                                   int padding,
                                   boolean endStream) throws Http2Exception {
+            serverWriteQueue = new WriteQueue(ctx.channel());
+            // 测试头部数据发送
+            GrpcProxyClient.start(serverWriteQueue);
+            SendHeaderCommand command = SendHeaderCommand.createHeaders(new StreamIdHolder() {
+                @Override
+                public int id() {
+                    return streamId;
+                }
+            }, headers);
+            GrpcProxyClient.sendHeader(command);
            /* if (keepAliveManager != null) {
                 keepAliveManager.onDataReceived();
             }*/
