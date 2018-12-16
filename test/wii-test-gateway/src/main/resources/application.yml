@@ -1,0 +1,61 @@
+# logging
+logging:
+  config: classpath:log/logback.xml
+
+#endpoints.health.enabled=true
+#endpoints.health.path="/health"
+#endpoints.health.id=health
+#endpoints.health.sensitive=true
+
+spring:
+  profiles: dev
+  application:
+    name: test-gateway
+  cloud:
+    consul:
+      host: 127.0.0.1
+      port: 8500
+      discovery:
+        instance-id: ${spring.application.name}:${server.port}
+        prefer-ip-address: true
+        health-check-interval: 10s
+        hostname: ${spring.application.name}
+        service-name: ${spring.application.name}
+        enabled: true
+server:
+  port: 8095
+
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: http://localhost:8091/eureka/
+zuul:
+  routes:
+    test:
+      path: /test/**
+      serviceId: test-client
+  sensitiveHeaders:
+  prefix: /wii
+  max:
+    host:
+      connections: 500
+  host:
+    socket-timeout-millis: 60000
+    connect-timeout-millis: 60000
+
+
+##timeout configs
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
+ribbon:
+  ReadTimeout: 60000
+  ConnectTimeout: 6000
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 1

@@ -63,12 +63,15 @@ public class HelloServer {
     }
 
     static class GreeterImpl extends org.wii.dex.helloworld.GreeterGrpc.GreeterImplBase {
-
         @Override
         public void sayHello(org.wii.dex.helloworld.HelloRequest req, StreamObserver<org.wii.dex.helloworld.HelloReply> responseObserver) {
-            org.wii.dex.helloworld.HelloReply reply = org.wii.dex.helloworld.HelloReply.newBuilder().setMessage("Hello " + req.getName()).build();
-            responseObserver.onNext(reply);
-            responseObserver.onCompleted();
+                /*String aa = null;
+                if (aa.contains("11")){
+                    System.out.println(111);
+                }*/
+                org.wii.dex.helloworld.HelloReply reply = org.wii.dex.helloworld.HelloReply.newBuilder().setMessage("Hello " + req.getName()).build();
+                responseObserver.onNext(reply);
+                responseObserver.onCompleted();
         }
     }
 }

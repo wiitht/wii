@@ -63,7 +63,7 @@ public class HelloClient {
      * greeting.
      */
     public static void main(String[] args) throws Exception {
-        HelloClient client = new HelloClient("localhost", 8083);
+        HelloClient client = new HelloClient("localhost", 50051);
         try {
             client.greet("1111");
         } finally {

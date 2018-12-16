@@ -14,6 +14,15 @@
 /support/*/.idea/
 /support/*/.iml
 
+/service/*/target/
+/service/*/data/
+/service/*/.idea/
+/service/*/.iml
+
+/test/*/target/
+/test/*/data/
+/test/*/.idea/
+/test/*/.iml
 
 *.iml
 *.DS_Store

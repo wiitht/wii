@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: test-client
+  cloud:
+    consul:
+      host: 127.0.0.1
+      port: 8500
+      discovery:
+        instance-id: ${spring.application.name}:${server.port}
+        prefer-ip-address: true
+        health-check-interval: 10s
+        hostname: ${spring.application.name}
+        service-name: ${spring.application.name}
+        enabled: true
+
+server:
+  port: 8082
