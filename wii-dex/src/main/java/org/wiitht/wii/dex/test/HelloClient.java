@@ -63,7 +63,7 @@ public class HelloClient {
      * greeting.
      */
     public static void main(String[] args) throws Exception {
-        HelloClient client = new HelloClient("192.168.8.130", 9001);
+        HelloClient client = new HelloClient("127.0.0.1", 9001);
         try {
             client.greet("1111");
         } finally {
