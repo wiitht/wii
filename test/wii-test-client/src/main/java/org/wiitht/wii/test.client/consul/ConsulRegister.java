@@ -11,15 +11,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
-//@Configuration
-//@EnableScheduling
+@Configuration
+@EnableScheduling
 public class ConsulRegister implements InitializingBean, DisposableBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsulRegister.class);
 
     private final String CHECK_ID = "test_check_id";
     private final String CHECK_NAME = "test_check";
-    private final String SERVICE_ID = "test-client-consul";
+    private final String SERVICE_ID = "test-client";
 
 
     private void registerServiceToConsul() {
@@ -28,8 +28,8 @@ public class ConsulRegister implements InitializingBean, DisposableBean {
             //组装服务信息
             NewService newService = new NewService();
             newService.setId(SERVICE_ID);
-            newService.setName("tt-client");
-            newService.setPort(8082);
+            newService.setName("test-client");
+            newService.setPort(50051);
             newService.setAddress("127.0.0.1");
             //组装健康检查信息
             NewCheck serviceCheck = new NewCheck();
