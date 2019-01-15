@@ -5,9 +5,9 @@
 /wii-eel/.iml
 
 /wii-core/target/
-/wii_core/data/
-/wii_core/.idea/
-/wii_core/.iml
+/wii-core/data/
+/wii-core/.idea/
+/wii-core/.iml
 
 /support/*/target/
 /support/*/data/
