@@ -25,7 +25,6 @@
 
     <modules>
         <module>wii-core</module>
-        <module>wii-dex</module>
     </modules>
 
     <properties>
@@ -61,7 +60,7 @@
             </dependency>
             <dependency>
                 <groupId>org.wiitht.wii</groupId>
-                <artifactId>wii-dex</artifactId>
+                <artifactId>wii-eel</artifactId>
                 <version>0.1.0-SNAPSHOT</version>
             </dependency>-->
 
