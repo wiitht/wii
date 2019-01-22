@@ -1,8 +1,8 @@
 /.idea/
-/wii-eel/target/
-/wii-eel/data/
-/wii-eel/.idea/
-/wii-eel/.iml
+/wii-dex/target/
+/wii-dex/data/
+/wii-dex/.idea/
+/wii-dex/.iml
 
 /wii-core/target/
 /wii-core/data/
